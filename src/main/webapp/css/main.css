@@ -1,0 +1,125 @@
+#app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+
+
+
+
+.nav-search {
+    margin-bottom: 0;
+    margin-right: 30px;
+}
+.nav-avatar {
+    border-radius: 50%;
+    max-height: 40px;
+    max-width: 50px;
+}
+.home-category {
+    border: 1px solid lightgray;
+    cursor: pointer;
+    display: inline-block;
+    height: 25vw;
+    margin: 2.5vw;
+    vertical-align: bottom;
+    width: 20vw;
+}
+.home-category h3 {
+    display: block;
+    font-size: 1.5vw;
+    padding: .1vw 1vw;
+}
+.home-category picture {
+    align-items: center;
+    background-color: antiquewhite;
+    display: flex;
+    height: 19vw;
+    justify-content: center;
+    margin: auto;
+    width: 19vw;
+}
+.home-category img {
+    max-height: 19vw;
+    max-width: 19vw;
+    width: 100%;
+}
+.home-category p {
+    font-size: 1vw;
+    padding: .1vw 1vw;
+}
+
+.product-card {
+    cursor: pointer;
+    display: inline-block;
+    height: 20vw;
+    margin: 2.0vw;
+    position: relative;
+    vertical-align: bottom;
+    width: 14vw;
+}
+.product-card picture {
+    align-items: center;
+    background-color: #eee;
+    display: flex;
+    height: 14vw;
+    justify-content: center;
+    margin: auto;
+    width: 14vw;
+}
+.product-card img {
+    max-height: 14vw;
+    max-width: 14vw;
+    width: 100%;
+}
+.product-card h3 {
+    font-size: 1.25vw;
+    margin: .5vw 0 0 0;
+}
+.product-card p {
+    font-size: 1vw;
+    margin: 0;
+    padding: .1vw 0;
+}
+.product-card h4 {
+    font-size: 1.5vw;
+    margin: 0;
+}
+.cart-fab {
+    align-items: center;
+    background-color: tomato;
+    border-radius: 50%;
+    bottom: 4.5vw;
+    color: snow;
+    display: flex;
+    height: 3vw;
+    justify-content: center;
+    position: absolute;
+    right: .75vw;
+    width: 3vw;
+}
+
+
+/* Темные стили для модального окна */
+.modal-content {
+    background-color: #343a40; /* Тёмный серый фон */
+    color: #e0e0e0; /* Светлый текст */
+    border: none;
+    border-radius: 8px;
+}
+
+.modal-header, .modal-footer {
+    border: none; /* Убираем границы */
+}
+
+.modal-title {
+    color: #ffffff; /* Белый заголовок */
+}
+
+.input-group-text {
+    background-color: #495057; /* Тёмный цвет для иконок */
+    color: #ced4da; /* Светлый цвет иконок */
+    border: none;
+}
+
