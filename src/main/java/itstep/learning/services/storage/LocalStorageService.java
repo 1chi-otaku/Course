@@ -2,67 +2,68 @@ package itstep.learning.services.storage;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import itstep.learning.services.filegenerator.RandomFileNameService;
+import itstep.learning.services.filename.FileNameService;
 import org.apache.commons.fileupload.FileItem;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 
 @Singleton
 public class LocalStorageService implements StorageService {
-    private final static String storagePath = "I:/storage/Java213/";
+    private final static String storagePath = "I:/storage/Java213";
     private final static int bufferSize = 4096;
-    private final RandomFileNameService randomFileNameService;
+
+    private final FileNameService fileNameService;
 
     @Inject
-    public LocalStorageService(RandomFileNameService randomFileNameService) {
-        this.randomFileNameService = randomFileNameService;
+    public LocalStorageService(FileNameService fileNameService) {
+        this.fileNameService = fileNameService;
     }
 
     @Override
-    public File getFile( String fileName ) {
+    public File getFile(String fileName) {
         if( fileName == null ) {
             return null;
         }
-        File file = new File( storagePath, fileName );
-        if( ! file.exists() ) {
-            return null;
-        }
-        return file;
+            File file = new File( storagePath, fileName );
+            if( ! file.exists() ) {
+                return null;
+            }
+                return file;
     }
 
     @Override
-    public String saveFile( FileItem fileItem ) throws IOException {
-        // Перевіряємо наявність даних для збереження
-        if( fileItem == null ) {
-            throw new IOException( "FileItem is null" );
+    public String saveFile(FileItem fileItem) throws IOException {
+        if (fileItem == null) {
+            throw new IOException("FileItem is null");
+
+
         }
-        if( fileItem.getSize() == 0 ) {
-            throw new IOException( "FileItem is empty" );
+        if (fileItem.getSize() == 0) {
+            throw new IOException("FileItem is empty");
         }
+
         String fileName = fileItem.getName();
-        if( fileName == null ) {
+        if (fileName == null) {
             throw new IOException( "FileItem has no name" );
-        }
 
+        }
         // виділяємо розширення з початкового імені файлу
         int dotIndex = fileName.lastIndexOf( '.' );
         if( dotIndex == -1 ) {
-            throw new IOException( "FileItem has no extension" );
+            throw new IOException("FileItem has no extension");
         }
-        String extension = fileName.substring( dotIndex );
-        if( ".".equals( extension ) ) {
-            throw new IOException( "FileItem has empty extension" );
+            String extension = fileName. substring( dotIndex );
+        if(".".equals(extension)) {
+            throw new IOException("FileItem has empty extension");
         }
-
         // генеруємо нове ім'я файлу, перевіряємо що такого немає у сховищі
         String savedName;
         File file;
         do {
-            savedName = randomFileNameService.generateFileName(10) + extension ;
+            savedName = fileNameService.generateRandomFileName() + extension;
             file = new File( storagePath, savedName );
         } while( file.exists() );
 
@@ -72,8 +73,8 @@ public class LocalStorageService implements StorageService {
         }
         byte[] buffer = new byte[(int)size];
         int len;
-        try( FileOutputStream fos = new FileOutputStream( file );
-             InputStream in = fileItem.getInputStream()
+        try(FileOutputStream fos = new FileOutputStream( file );
+            InputStream in = fileItem.getInputStream()
         ) {
             while( ( len = in.read( buffer ) ) > 0 ) {
                 fos.write( buffer, 0, len );

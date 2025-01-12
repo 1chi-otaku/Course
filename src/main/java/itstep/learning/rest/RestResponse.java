@@ -2,7 +2,7 @@ package itstep.learning.rest;
 
 public class RestResponse {
     private RestStatus status;
-    private RestMetaData meta;
+    private  RestMetaData meta;
     private Object data;
 
     public RestStatus getStatus() {

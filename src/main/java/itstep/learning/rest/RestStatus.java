@@ -5,12 +5,16 @@ public class RestStatus {
     private int code;
     private String phrase;
 
-    public RestStatus() {
+    public RestStatus()
+    {
+
     }
 
-    public RestStatus(int code) {
-        this.setCode( code );
-        switch( code ) {
+    public RestStatus(int code)
+    {
+        this.setCode(code);
+        switch (code)
+        {
             case 200: setSuccessful(true); setPhrase( "OK" ); break;
             case 201: setSuccessful(true); setPhrase( "Created" ); break;
             case 202: setSuccessful(true); setPhrase( "Accepted" ); break;
@@ -21,7 +25,8 @@ public class RestStatus {
             case 404: setSuccessful(false); setPhrase( "Not Found" ); break;
             case 500: setSuccessful(false); setPhrase( "Internal Server Error" ); break;
             case 503: setSuccessful(false); setPhrase( "Service Unavailable" ); break;
-            default: setSuccessful( code < 300 ); setPhrase( "Code: " + code );
+            default: setSuccessful(code < 300); setPhrase( "code: " + code );
+
         }
     }
 
@@ -55,15 +60,14 @@ public class RestStatus {
 /*
 Статуси і коди
 є два етапи оброблення запиту
-- HTTP
-- REST
+-HTTP
+-REST
 Наприклад, запит на товар /shop/product/no-one
 - за НТТР обробляється успішно - знаходить URL та передає йому управління
-   (формуються метадані)
+(формуються метадані)
 - за REST маємо помилку 404 не знайдено
 = метадані є, даних немає
 
 Наприклад /shop/no-one
 - за НТТР 404, оброблення немає, метаданих немає
-
- */
+*/

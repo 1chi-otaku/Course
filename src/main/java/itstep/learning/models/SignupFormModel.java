@@ -5,14 +5,22 @@ import org.apache.commons.fileupload.FileItem;
 import java.util.Date;
 
 public class SignupFormModel {
+    private String login;
     private String name;
     private String email;
     private String phone;
-    private String login;
     private String password;
     private String repeat;
     private Date birthdate;
     private String avatar;
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
     public String getName() {
         return name;
@@ -36,14 +44,6 @@ public class SignupFormModel {
 
     public void setPhone(String phone) {
         this.phone = phone;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
     }
 
     public String getPassword() {
@@ -78,8 +78,3 @@ public class SignupFormModel {
         this.avatar = avatar;
     }
 }
-/*
-Д.З. Реалізувати сервіси парсингу форм (FormParseService)
- та управління збереженням/видачею файлів (StorageService)
-у власних курсових проєктах
- */

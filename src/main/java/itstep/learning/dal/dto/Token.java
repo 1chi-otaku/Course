@@ -11,18 +11,20 @@ public class Token {
     private Date iat;
     private Date exp;
 
-    public Token() { }
+    public Token(){}
 
-    public Token( ResultSet resultSet ) throws SQLException {
-        String id = resultSet.getString( "token_id" );
-        if( id == null ) {
-            throw new SQLException( "Token with null ID" );
+public Token(ResultSet resultSet) throws SQLException {
+        String id = resultSet.getString("token_id");
+        if(id == null){
+            throw new SQLException("Token with null ID");
         }
-        this.setTokenId( UUID.fromString( id ) );
+        this.setTokenId(UUID.fromString(id));
 
-        this.setUserId( UUID.fromString( resultSet.getString( "user_id" ) ) );
-        this.setIat( new Date( resultSet.getTimestamp( "iat" ).getTime() ) );
-        this.setExp( new Date( resultSet.getTimestamp( "exp" ).getTime() ) );
+        this.setTokenId(UUID.fromString(resultSet.getString("token_id")));
+
+        this.setUserId(UUID.fromString(resultSet.getString("user_id")));
+        this.setIat(new Date(resultSet.getTimestamp("iat").getTime()));
+        this.setExp(new Date(resultSet.getTimestamp("exp").getTime()));
     }
 
     public UUID getTokenId() {
