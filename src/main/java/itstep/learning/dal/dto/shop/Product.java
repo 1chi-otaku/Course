@@ -18,6 +18,7 @@ public class Product {
     private Date deleteDt;
     private double price;
     private int quantity;
+    private int discount;
 
     private Category category;
     private List<String> imageUrls;
@@ -35,6 +36,7 @@ public class Product {
         this.setSlug( rs.getString( "product_slug" ) );
         this.setPrice( rs.getDouble( "product_price" ) );
         this.setQuantity( rs.getInt( "product_amount" ) );
+        this.setDiscount( rs.getInt( "discount" ) );
         Timestamp timestamp = rs.getTimestamp( "product_delete_dt" );
         if ( timestamp != null ) {
             this.setDeleteDt( new Date( timestamp.getTime() ) );
@@ -129,6 +131,14 @@ public class Product {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(int discount) {
+        this.discount = discount;
     }
 
     public List<Product> getSimilarProducts() {

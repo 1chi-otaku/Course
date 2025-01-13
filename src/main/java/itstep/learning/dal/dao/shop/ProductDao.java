@@ -128,8 +128,8 @@ public class ProductDao {
         product.setId(UUID.randomUUID());
         String sql = "INSERT INTO `products`" +
                 "(`product_id`, `category_id`, `product_name`, `product_description`, " +
-                "`product_slug`, `product_img_url`, `product_price`, `product_amount`, `product_delete_dt` )" +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "`product_slug`, `product_img_url`, `product_price`, `product_amount`, `discount`, `product_delete_dt` )" +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         try(PreparedStatement prep = dbService.getConnection().prepareStatement(sql))
         {
@@ -141,11 +141,12 @@ public class ProductDao {
             prep.setString( 6, product.getImageUrl() );
             prep.setDouble( 7, product.getPrice() );
             prep.setInt( 8, product.getQuantity() );
+            prep.setInt( 9, product.getDiscount() );
             if( product. getDeleteDt() != null ) {
-                prep.setTimestamp( 9, new Timestamp( product. getDeleteDt().getTime() ) );
+                prep.setTimestamp( 10, new Timestamp( product. getDeleteDt().getTime() ) );
             }
             else {
-                prep.setTimestamp(9, null);
+                prep.setTimestamp(10, null);
             }
             prep.executeUpdate();
         } catch (SQLException ex) {
@@ -228,6 +229,7 @@ public class ProductDao {
                 " `product_price`       DECIMAL(8,2)       NULL," +
                 " `product_img_url`     VARCHAR(256)      NULL," +  
                 " `product_amount`      INT               NOT NULL," +
+                 " `discount`      INT               NOT NULL," +
                 " `product_delete_dt`   DATETIME          NULL," +
                  " `product_slug`  VARCHAR(256)         NULL," +
                  "UNIQUE (`product_slug`)" +

@@ -35,6 +35,8 @@ function reducer( state, action ) {
                 authUser: null,
                 cart: null,
             };
+        case 'search':
+            return { ...state, page: 'search' };
         case 'navigate':
             window.location.hash = action.payload;
             return { ...state,
@@ -117,6 +119,7 @@ function App({contextPath, homePath}) {
 
     return <AppContext.Provider value={{state, dispatch, contextPath, loadCategories, request, refreshCart}}>
         <header>
+
             <nav
                 className="navbar navbar-expand-lg"
                 style={{backgroundColor: "#221F1F"}}
@@ -182,8 +185,6 @@ function App({contextPath, homePath}) {
                             0
                         )
                         : 0}
-
-
                   </span>
                                 </a>
                             </li>
@@ -262,6 +263,7 @@ function App({contextPath, homePath}) {
             {state.page === 'cart' && <Cart/>}
             {state.page === 'home' && <Home/>}
             {state.page === 'profile' && <Profile/>}
+            {state.page === 'search' && <SearchPage />}
             {state.page === 'signup' && <Signup/>}
             {state.page.startsWith('category/') && <Category id={state.page.substring(9)}/>}
             {state.page.startsWith('product/') && <Product id={state.page.substring(8)}/>}
@@ -422,6 +424,12 @@ function Profile() {
     </div>;
 }
 
+function SearchPage() {
+    return <div>
+        <h1>Search</h1>
+    </div>;
+}
+
 function Admin() {
     const {state, dispatch, contextPath, loadCategories} = React.useContext(AppContext);
     React.useEffect(() => {
@@ -450,6 +458,10 @@ function Admin() {
     const onProductSubmit = React.useCallback(e => {
         e.preventDefault();
         const formData = new FormData(e.target);
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+
         fetch(`${contextPath}/shop/product`, {
             method: "POST",
             body: formData
@@ -480,8 +492,8 @@ function Admin() {
                 </div>
                 <div className="col col-6">
                     <div className="input-group mb-3">
-                        <span className="input-group-text" id="description-addon"><i
-                            className="bi bi-card-text"></i></span>
+                    <span className="input-group-text" id="description-addon"><i
+                        className="bi bi-card-text"></i></span>
                         <input type="text" className="form-control"
                                name="category-description" placeholder="Опис"
                                aria-label="Опис" aria-describedby="description-addon"/>
@@ -529,8 +541,8 @@ function Admin() {
                 </div>
                 <div className="col col-6">
                     <div className="input-group mb-3">
-                        <span className="input-group-text" id="product-description-addon"><i
-                            className="bi bi-card-text"></i></span>
+                    <span className="input-group-text" id="product-description-addon"><i
+                        className="bi bi-card-text"></i></span>
                         <input type="text" className="form-control"
                                name="product-description" placeholder="Опис"
                                aria-label="Опис" aria-describedby="product-description-addon"/>
@@ -557,8 +569,8 @@ function Admin() {
             <div className="row">
                 <div className="col col-6">
                     <div className="input-group mb-3">
-                        <span className="input-group-text" id="product-price-addon"><i
-                            className="bi bi-cash"></i></span>
+                    <span className="input-group-text" id="product-price-addon"><i
+                        className="bi bi-cash"></i></span>
                         <input type="number" step="0.01" className="form-control"
                                name="product-price" placeholder="Ціна"
                                aria-label="Ціна" aria-describedby="product-price-addon"/>
@@ -573,13 +585,26 @@ function Admin() {
             <div className="row">
                 <div className="col col-6">
                     <div className="input-group mb-3">
-                        <span className="input-group-text" id="product-quantity-addon"><i
-                            className="bi bi-1-circle"></i></span>
+                    <span className="input-group-text" id="product-quantity-addon"><i
+                        className="bi bi-1-circle"></i></span>
                         <input type="number" step="1" className="form-control" defaultValue="1"
                                name="product-quantity" placeholder="Кількість"
                                aria-label="Кількість" aria-describedby="product-quantity-addon"/>
                     </div>
+
                 </div>
+
+                <div className="col col-6">
+                    <div className="input-group mb-3">
+                        <span className="input-group-text" id="product-discount-addon"><i className="bi bi-percent"></i></span>
+                        <input type="number" step="1" className="form-control"
+                               name="discount" placeholder="Скидка (%)"
+                               aria-label="Скидка" aria-describedby="product-discount-addon"/>
+                    </div>
+                </div>
+            </div>
+
+            <div className="row">
                 <div className="col col-6">
                     <button type="submit" className="btn btn-outline-success">Створити</button>
                 </div>
@@ -927,6 +952,7 @@ function Product({id}) {
     });
     return <div>
         <h2>Сторінка товару</h2>
+        <h4>{product.discount}</h4>
         {product.id && <div>
             <div className="row">
                 <div className="col col-5">
@@ -998,7 +1024,3 @@ const hp = domRoot.getAttribute("data-home-path");
 ReactDOM
     .createRoot(domRoot)
     .render(<App contextPath={cp} homePath={hp}/>);
-/*
-Д.З. Впровадити similarity контенту у
-власний курсовий проєкт. (Вас також може зацікавити / з цим також купують/переглядають ...
- */

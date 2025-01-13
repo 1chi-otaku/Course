@@ -160,6 +160,16 @@ public class ProductServlet extends RestServlet {
             throw new Exception( "Required 'product-quantity' has invalid format" );
         }
 
+        data = formParseResult.getFields().get("discount");
+        if (data == null || data.isEmpty()) {
+            product.setDiscount(0);
+        }
+        else try {
+            product.setDiscount(Integer.parseInt(data));
+        } catch (IllegalArgumentException ignored) {
+            throw new Exception( "Required 'discount' has invalid format" );
+        }
+
 
         data = formParseResult.getFields().get("product-slug");
         // правило Де Моргана
