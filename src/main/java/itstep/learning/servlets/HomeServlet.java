@@ -3,6 +3,7 @@ package itstep.learning.servlets;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import itstep.learning.dal.dao.AuthDao;
+import itstep.learning.dal.dao.shop.ReviewDao;
 import itstep.learning.dal.dao.shop.CartDao;
 import itstep.learning.dal.dao.shop.ProductDao;
 import itstep.learning.services.db.DbService;
@@ -20,6 +21,7 @@ import java.sql.Statement;
 @Singleton
 public class HomeServlet extends HttpServlet {
     private final AuthDao authDao; // інжекцію класів (не інтерфейсів) реєструвати не треба
+    private final ReviewDao reviewDao;
     private final FileNameService fileNameService;
     private final DbService dbService;
     private final ProductDao productDao;
@@ -28,9 +30,10 @@ public class HomeServlet extends HttpServlet {
 
 
     @Inject
-    public HomeServlet(AuthDao authDao, FileNameService fileNameService, DbService dbService, ProductDao productDao, CartDao cartDao) {
+    public HomeServlet(AuthDao authDao, ReviewDao reviewDao, FileNameService fileNameService, DbService dbService, ProductDao productDao, CartDao cartDao) {
 
         this.authDao = authDao;
+        this.reviewDao = reviewDao;
         this.fileNameService = fileNameService;
         this.dbService = dbService;
         this.productDao = productDao;
@@ -49,7 +52,8 @@ public class HomeServlet extends HttpServlet {
 
             String dbMessage;
             try {
-                 dbMessage = authDao.install() && productDao.install() && cartDao.install() ? "Install OK" : "Install failed";
+                 dbMessage = authDao.install() && productDao.install() && cartDao.install() && reviewDao.install() ? "Install OK" : "Install failed";
+
 
             }
             catch (Exception e) {

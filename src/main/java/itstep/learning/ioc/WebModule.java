@@ -1,5 +1,6 @@
 package itstep.learning.ioc;
 
+import itstep.learning.dal.dto.shop.Review;
 import itstep.learning.servlets.*;
 
 import com.google.inject.servlet.ServletModule;
@@ -26,6 +27,7 @@ public class WebModule extends ServletModule {
 
         serve("/shop/cart").with( CartServlet.class);
         serve( "/shop/category" ).with( CategoryServlet.class );
+        serve( "/shop/review" ).with( ReviewServlet.class );
         serve( "/shop/product" ).with( ProductServlet.class );
         serve( "/shop/profile" ).with( ProfileServlet.class);
 
