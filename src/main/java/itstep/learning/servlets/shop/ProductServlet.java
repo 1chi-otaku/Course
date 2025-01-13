@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -50,6 +51,12 @@ public class ProductServlet extends RestServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        String searchQuery = req.getParameter("search");
+        if (searchQuery != null && !searchQuery.trim().isEmpty()) {
+            this.searchProducts(searchQuery);
+            return;
+        }
         String id = req.getParameter("id");
         if( id != null ) {
             this.getById( id );
@@ -64,6 +71,15 @@ public class ProductServlet extends RestServlet {
 
     }
 
+    private void searchProducts(String query) throws IOException {
+        List<Product> products = productDao.searchProducts(query);
+        if (products.isEmpty()) {
+            super.sendResponse(404, "No products found for the search term: " + query);
+        } else {
+            super.sendResponse(200, products);
+        }
+    }
+
     private void getById( String id) throws IOException {
         super.sendResponse( 200, productDao.getByIdOrSlug( id, true ) );
     }
@@ -71,6 +87,7 @@ public class ProductServlet extends RestServlet {
     private void getByCategory( String category) throws IOException {
         super.sendResponse( 200, productDao.read( category ) );
     }
+
 
 
 

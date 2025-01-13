@@ -43,6 +43,28 @@ public class ProductDao {
         return read(categoryIdOrSlug,false);
     }
 
+    public List<Product> searchProducts(String query) {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT * FROM `products` WHERE (`product_name` LIKE ? OR `product_description` LIKE ?)";
+
+        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
+            String searchQuery = "%" + query + "%";
+            prep.setString(1, searchQuery);
+            prep.setString(2, searchQuery);
+
+            ResultSet rs = prep.executeQuery();
+            while (rs.next()) {
+                products.add(new Product(rs));
+            }
+            rs.close();
+        } catch (SQLException ex) {
+            logger.warning(ex.getMessage() + " -- " + sql);
+        }
+
+        return products;
+    }
+
+
     public List<Product> read(String categoryIdOrSlug, Boolean withDeleted) {
         List<Product> products = new ArrayList<>();
 

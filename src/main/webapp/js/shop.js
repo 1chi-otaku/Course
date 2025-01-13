@@ -1,6 +1,7 @@
 ﻿const initialState = {
     authUser: null,
     categories: [],
+    products: [],
     cart:null,
     page: 'home',
 };
@@ -23,6 +24,10 @@ function reducer( state, action ) {
         case 'cart':
             return { ...state,
                 cart: action.payload,
+            };
+        case 'products':
+            return { ...state,
+                products: action.payload,
             };
         case 'logout' :
             window.localStorage.removeItem( "auth-user" );
@@ -112,7 +117,10 @@ function App({contextPath, homePath}) {
 
     return <AppContext.Provider value={{state, dispatch, contextPath, loadCategories, request, refreshCart}}>
         <header>
-            <nav className="navbar navbar-expand-lg" style={{backgroundColor: "#221F1F"}}>
+            <nav
+                className="navbar navbar-expand-lg"
+                style={{backgroundColor: "#221F1F"}}
+            >
                 <div className="container-fluid">
                     <a
                         className="navbar-brand d-flex align-items-center"
@@ -124,15 +132,15 @@ function App({contextPath, homePath}) {
                             cursor: "pointer",
                         }}
                     >
-                <span
-                    className="circle-logo rounded-circle me-2"
-                    style={{
-                        backgroundColor: "#05BC52",
-                        width: "48px",
-                        height: "48px",
-                        display: "inline-block",
-                    }}
-                ></span>
+            <span
+                className="circle-logo rounded-circle me-2"
+                style={{
+                    backgroundColor: "#05BC52",
+                    width: "48px",
+                    height: "48px",
+                    display: "inline-block",
+                }}
+            ></span>
                         ElectroNest
                     </a>
 
@@ -166,29 +174,28 @@ function App({contextPath, homePath}) {
                                 >
                                     Cart
                                     <span className="cart-widget-quantity">
-                                {state.cart && state.cart.cartItems && state.cart.cartItems.length > 0
-                                    ? state.cart.cartItems.reduce((s, c) => s + c.quantity, 0)
-                                    : 0}
-                            </span>
+                    {state.cart &&
+                    state.cart.cartItems &&
+                    state.cart.cartItems.length > 0
+                        ? state.cart.cartItems.reduce(
+                            (s, c) => s + c.quantity,
+                            0
+                        )
+                        : 0}
+
+
+                  </span>
                                 </a>
                             </li>
                         </ul>
-
-                        {/* Search Section with margin top and right */}
-                        <form className="d-flex ms-auto mt-3" role="search" onSubmit={(e) => e.preventDefault()}>
+                        <form className="d-flex nav-search" role="search">
                             <input
                                 className="form-control me-2"
                                 type="search"
                                 placeholder="Search"
                                 aria-label="Search"
-                                onChange={(e) => dispatch({type: "search", payload: e.target.value})}
-                                style={{borderRadius: "20px", padding: "10px 15px"}}
                             />
-                            <button
-                                className="btn btn-outline-light"
-                                type="submit"
-                                style={{borderRadius: "20px"}}
-                            >
+                            <button className="btn btn-outline-success" type="submit">
                                 <i className="bi bi-search"></i>
                             </button>
                         </form>
@@ -250,7 +257,6 @@ function App({contextPath, homePath}) {
                 </div>
             </nav>
         </header>
-
         <main className="container">
             {state.page === 'admin' && <Admin/>}
             {state.page === 'cart' && <Cart/>}
@@ -391,8 +397,7 @@ function Profile() {
                                         <div className="col col-2">
                                             <picture onClick={() => dispatch({
                                                 type: 'navigate',
-                                                payload: 'product/' + (item.product.slug || item.product.id)
-                                            })}>
+                                                payload: 'product/' + (item.product.slug || item.product.id)})}>
                                                 <img src={"storage/" + item.product.imageUrl} alt="product"/>
                                             </picture>
                                         </div>
