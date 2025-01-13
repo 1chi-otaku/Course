@@ -8,40 +8,49 @@
 
 const AppContext = React.createContext(null);
 
-function reducer( state, action ) {
-    switch( action.type ) {
-        case 'authenticate' :
-            // if( ! window.localStorage.getItem( "auth-user" ) ) {
+function reducer(state, action) {
+    switch (action.type) {
+        case 'authenticate':
             window.localStorage.setItem("auth-user", JSON.stringify(action.payload));
-            // }
-            return { ...state,
-                authUser: action.payload,
-            };
+            return { ...state, authUser: action.payload };
+
         case 'categories':
-            return { ...state,
-                categories: action.payload,
-            };
+            return { ...state, categories: action.payload };
+
         case 'cart':
-            return { ...state,
-                cart: action.payload,
-            };
+            return { ...state, cart: action.payload };
+
         case 'products':
-            return { ...state,
-                products: action.payload,
-            };
-        case 'logout' :
-            window.localStorage.removeItem( "auth-user" );
-            return { ...state,
-                authUser: null,
-                cart: null,
-            };
+            return { ...state, products: action.payload };
+
+        case 'logout':
+            window.localStorage.removeItem("auth-user");
+            return { ...state, authUser: null, cart: null };
+
         case 'search':
-            return { ...state, page: 'search' };
-        case 'navigate':
-            window.location.hash = action.payload;
-            return { ...state,
-                page: action.payload,
+            return {
+                ...state,
+                page: 'search',
+                searchQuery: action.payload.query, // сохраняем строку поиска
+                searchResults: action.payload.results || [] // сохраняем результаты поиска
             };
+
+        case 'navigate': {
+            window.location.hash = action.payload;
+            const [path, queryParams] = action.payload.split('?');
+            const searchParams = new URLSearchParams(queryParams);
+
+            return {
+                ...state,
+                page: path,
+                searchQuery: searchParams.get('query') || '',
+            };
+        }
+
+
+
+        default:
+            return state;
     }
 }
 
@@ -189,8 +198,24 @@ function App({contextPath, homePath}) {
                                 </a>
                             </li>
                         </ul>
-                        <form className="d-flex nav-search" role="search">
+                        <form
+                            className="d-flex nav-search"
+                            role="search"
+                            onSubmit={async (e) => {
+                                e.preventDefault();
+                                const searchInput = e.target.elements.search;
+                                if (searchInput) {
+                                    const searchQuery = searchInput.value.trim();
+                                    if (searchQuery) {
+                                        const newHash = `search?query=${encodeURIComponent(searchQuery)}`;
+                                        dispatch({type: "navigate", payload: newHash});
+                                        console.log("Navigating to search with query:", searchQuery);
+                                    }
+                                }
+                            }}
+                        >
                             <input
+                                name="search"
                                 className="form-control me-2"
                                 type="search"
                                 placeholder="Search"
@@ -200,6 +225,7 @@ function App({contextPath, homePath}) {
                                 <i className="bi bi-search"></i>
                             </button>
                         </form>
+
 
                         {!state.authUser && (
                             <div>
@@ -259,11 +285,12 @@ function App({contextPath, homePath}) {
             </nav>
         </header>
         <main className="container">
+            {console.log("Current page:", state.page)}
             {state.page === 'admin' && <Admin/>}
             {state.page === 'cart' && <Cart/>}
             {state.page === 'home' && <Home/>}
             {state.page === 'profile' && <Profile/>}
-            {state.page === 'search' && <SearchPage />}
+            {state.page === 'search' && <SearchPage/>}
             {state.page === 'signup' && <Signup/>}
             {state.page.startsWith('category/') && <Category id={state.page.substring(9)}/>}
             {state.page.startsWith('product/') && <Product id={state.page.substring(8)}/>}
@@ -443,9 +470,43 @@ function Profile() {
 }
 
 function SearchPage() {
-    return <div>
-        <h1>Search</h1>
-    </div>;
+    const { request } = React.useContext(AppContext);
+    const query = new URLSearchParams(window.location.hash.split('?')[1]).get('query');
+    const [products, setProducts] = React.useState([]); // Убедитесь, что переменная определена
+
+    React.useEffect(() => {
+        if (query) {
+            // Выполнить запрос на сервер с параметром поиска
+            request(`/shop/product?search=${encodeURIComponent(query)}`)
+                .then((data) => {
+                    console.log("Search Results:", data);
+                    setProducts(data); // Сохраняем полученные товары в состоянии
+                })
+                .catch((error) => {
+                    console.error("Error fetching search results:", error);
+                });
+        }
+    }, [query, request]); // Выполняем эффект при изменении `query` или `request`
+
+    return (
+        <div>
+            <h2>Search Results</h2>
+            {query ? (
+                <p>Results for: <strong>{query}</strong></p>
+            ) : (
+                <p>No search query provided.</p>
+            )}
+            <div className="product-list">
+                {products.length > 0 ? (
+                    products.map((product) => (
+                        <ProductCard p={product} key={product.id} />
+                    ))
+                ) : (
+                    <p>No products found.</p>
+                )}
+            </div>
+        </div>
+    );
 }
 
 function Admin() {

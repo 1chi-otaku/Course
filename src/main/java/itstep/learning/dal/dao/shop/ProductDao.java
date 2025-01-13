@@ -47,6 +47,7 @@ public class ProductDao {
         List<Product> products = new ArrayList<>();
         String sql = "SELECT * FROM `products` WHERE (`product_name` LIKE ? OR `product_description` LIKE ?)";
 
+
         try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
             String searchQuery = "%" + query + "%";
             prep.setString(1, searchQuery);
