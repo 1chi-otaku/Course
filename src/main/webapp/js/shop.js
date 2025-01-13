@@ -350,8 +350,8 @@ function Profile() {
                 </div>
                 <div className="col col-8">
                     <h2>Історія покупок</h2>
-                    {carts === null && <i>Дані завантажуються ...< /i>}
-                    {carts !== null && carts.length === 0 && <i>Ви ще не здійснювали покупок< /i>}
+                    {carts === null && <i>Дані завантажуються ...</i>}
+                    {carts !== null && carts.length === 0 && <i>Ви ще не здійснювали покупок</i>}
                     {carts !== null && carts.length > 0 && <div>
                         {carts.map(cart => <div className="row" key={cart.id}>
                             <div className="col">
@@ -365,9 +365,18 @@ function Profile() {
                                     ? new Date(cart.closeDt).toDateString()
                                     : 'не закритий'
                             }</div>
-                            <div className="col">{cart.cartItems.reduce((prev, item) => prev + item.quantity, 0)}</div>
                             <div className="col">
-                                {cart.cartItems.reduce((prev, item) => prev + item.price, 0.0).toFixed()}
+                                {cart.cartItems.reduce((prev, item) => prev + item.quantity, 0)}
+                            </div>
+                            <div className="col">
+                                {/* Сумма с учетом скидки для всего заказа */}
+                                {cart.cartItems.reduce((prev, item) => {
+                                    // Применяем скидку, если она есть
+                                    const discountedPrice = item.product.discount !== 0
+                                        ? item.product.price * (1 - item.product.discount / 100)
+                                        : item.product.price;
+                                    return prev + discountedPrice * item.quantity;
+                                }, 0.0).toFixed(2)}
                             </div>
                             <div className="col">
                                 {cart.closeDt
@@ -383,7 +392,6 @@ function Profile() {
                                     <div className="row cart-row">
                                         <div className="col col-2">
                                             <br/>
-
                                         </div>
                                         <div className="col col-4">
                                             <h5>Назва</h5>
@@ -399,7 +407,8 @@ function Profile() {
                                         <div className="col col-2">
                                             <picture onClick={() => dispatch({
                                                 type: 'navigate',
-                                                payload: 'product/' + (item.product.slug || item.product.id)})}>
+                                                payload: 'product/' + (item.product.slug || item.product.id)
+                                            })}>
                                                 <img src={"storage/" + item.product.imageUrl} alt="product"/>
                                             </picture>
                                         </div>
@@ -410,7 +419,16 @@ function Profile() {
                                             {item.quantity}
                                         </div>
                                         <div className="col col-3">
-                                            {item.price.toFixed(2)}
+                                            {/* Цена с учетом скидки */}
+                                            {item.product.discount !== 0
+                                                ? <span>
+                                    <del>{item.product.price.toFixed(2)}</del>
+                                    <span style={{color: 'red'}}>
+                                        {(item.product.price * (1 - item.product.discount / 100)).toFixed(2)}
+                                    </span>
+                                  </span>
+                                                : item.product.price.toFixed(2)
+                                            }
                                         </div>
                                     </div>)}
                                 </div>
@@ -815,86 +833,113 @@ function Cart() {
         }).then(refreshCart).catch(alert);
     })
 
-    const buyCart = React.useCallback(() =>{
-        if( ! confirm(`Підтверджуєте покупку на суму ${
-            state.cart.cartItems.reduce((s, c)=>s+c.price,0.0). toFixed( 2)} грн?`) )
-        {
+    const buyCart = React.useCallback(() => {
+        const totalAmount = state.cart.cartItems.reduce((s, c) => {
+            const discountedPrice = c.product.discount !== 0
+                ? c.product.price * (1 - c.product.discount / 100)
+                : c.product.price;
+            return s + (discountedPrice * c.quantity);
+        }, 0.0).toFixed(2);
+
+        if (!confirm(`Підтверджуєте покупку на суму ${totalAmount} грн?`)) {
             return;
         }
+
+        // Если пользователь подтвердил покупку, выполняем логику для оформления заказа
         // request(`/shop/cart?cart-id=${item.cartId}&product-id=${item.productId}`, {
         //     method: 'DELETE',
-        //
         // }).then(refreshCart).catch(alert);
-    })
+    });
 
 
     return <div>
         <h2>Кошик</h2>
 
-
         {state.cart && state.cart.cartItems
             ? <React.Fragment>
                 <div className="row cart-row">
-                    <div className="col col-2">
-                        <br/>
-
-                    </div>
-                    <div className="col col-3">
-                        <h5>Назва</h5>
-                    </div>
-                    <div className="col col-3">
-                        <h5>Кількість</h5>
-                    </div>
-                    <div className="col col-2">
-                        <h5>Ціна</h5>
-                    </div>
-                    <div className="col col-2">
-                        <br/>
-
-                    </div>
+                    <div className="col col-2"><br/></div>
+                    <div className="col col-3"><h5>Назва</h5></div>
+                    <div className="col col-3"><h5>Кількість</h5></div>
+                    <div className="col col-2"><h5>Ціна</h5></div>
+                    <div className="col col-2"><br/></div>
                 </div>
-                {state.cart.cartItems.map(item => <div className="row cart-row" key={item.productId}>
-                    <div className="col col-2">
-                        <picture onClick={() => dispatch({
-                            type: 'navigate',
-                            payload: 'product/' + (item.product.slug || item.product.id)})}>
-                            <img src={"storage/" + item.product.imageUrl} alt="product"/>
-                        </picture>
-                    </div>
-                    <div className="col col-3">
-                        {item.product.name}
-                    </div>
-                    <div className="col col-3">
-                        {item.quantity}
-                    </div>
-                    <div className="col col-2">
-                        {item.price.toFixed(2)}
-                    </div>
-                    <div className="col col-2">
-                        <button onClick={() => incCartItem(item, -1)} className="btn btn-outline-warning"><i className="bi bi-bag-dash"></i></button>
-                        <button onClick={() => incCartItem(item, 1)} className="btn btn-outline-success"><i className="bi bi-bag-plus"></i></button>
-                        <button onClick={() => delCartItem(item)} className="btn btn-outline-danger"><i className="bi bi-bag-x"></i></button>
-                    </div>
-                </div>)}
+
+                {state.cart.cartItems.map(item => {
+                    // Рассчитываем цену товара с учетом скидки
+                    const discountedPrice = item.product.discount !== 0
+                        ? item.product.price * (1 - item.product.discount / 100)
+                        : item.product.price;
+
+                    return (
+                        <div className="row cart-row" key={item.productId}>
+                            <div className="col col-2">
+                                <picture onClick={() => dispatch({
+                                    type: 'navigate',
+                                    payload: 'product/' + (item.product.slug || item.product.id)})}>
+                                    <img src={"storage/" + item.product.imageUrl} alt="product"/>
+                                </picture>
+                            </div>
+                            <div className="col col-3">
+                                {item.product.name}
+                            </div>
+                            <div className="col col-3">
+                                {item.quantity}
+                            </div>
+                            <div className="col col-2">
+                                {item.product.discount !== 0 ? (
+                                    <span>
+                                    <h4 style={{ textDecoration: 'line-through', color: 'gray' }}>
+                                        ₴ {item.product.price.toFixed(2)}
+                                    </h4>
+                                    <h4 style={{ color: 'red' }}>
+                                        ₴ {discountedPrice.toFixed(2)}
+                                    </h4>
+                                </span>
+                                ) : (
+                                    <h4>₴ {item.product.price.toFixed(2)}</h4>
+                                )}
+                            </div>
+                            <div className="col col-2">
+                                <button onClick={() => incCartItem(item, -1)} className="btn btn-outline-warning">
+                                    <i className="bi bi-bag-dash"></i>
+                                </button>
+                                <button onClick={() => incCartItem(item, 1)} className="btn btn-outline-success">
+                                    <i className="bi bi-bag-plus"></i>
+                                </button>
+                                <button onClick={() => delCartItem(item)} className="btn btn-outline-danger">
+                                    <i className="bi bi-bag-x"></i>
+                                </button>
+                            </div>
+                        </div>
+                    );
+                })}
+
                 {state.cart.cartItems.length > 0 && <div className="row">
-                    <div className="col offset-4 col-1">
-                        Разом
-                    </div>
+                    <div className="col offset-4 col-1">Разом</div>
                     <div className="col col-3">
                         {state.cart.cartItems.reduce((s, c) => s + c.quantity, 0)}
                     </div>
                     <div className="col col-2">
-                        {state.cart.cartItems.reduce((s, c) => s + c.price, 0.0).toFixed(2)}
+                        {state.cart.cartItems.reduce((s, c) => {
+                            const discountedPrice = c.product.discount !== 0
+                                ? c.product.price * (1 - c.product.discount / 100)
+                                : c.product.price;
+                            return s + (discountedPrice * c.quantity);
+                        }, 0).toFixed(2)}
                     </div>
                     <div className="col">
-                        <button onClick={() => buyCart()} className="btn btn-success" title="Придбати"><i className="bi bi-basket3"></i></button>
-                        <button onClick={() => delCart()} className="btn btn-danger" title="Скасувати"><i className="bi bi-trash3"></i></button>
-
+                        <button onClick={() => buyCart()} className="btn btn-success" title="Придбати">
+                            <i className="bi bi-basket3"></i>
+                        </button>
+                        <button onClick={() => delCart()} className="btn btn-danger" title="Скасувати">
+                            <i className="bi bi-trash3"></i>
+                        </button>
                     </div>
-
                 </div>}
             </React.Fragment>
             : <h3>Кошик порожній</h3>}
+
         <b onClick={() => dispatch({type: "navigate", payload: "home"})}>На Домашню</b>
     </div>;
 }
@@ -952,7 +997,6 @@ function Product({id}) {
     });
     return <div>
         <h2>Сторінка товару</h2>
-        <h4>{product.discount}</h4>
         {product.id && <div>
             <div className="row">
                 <div className="col col-5">
@@ -965,20 +1009,40 @@ function Product({id}) {
                 <div className="col col-7">
                     <h3>{product.name}</h3>
                     <p>{product.description}</p>
-                    <h4>{product.price.toFixed(2)}</h4>
-                    <button onClick={e => {e.stopPropagation();cartClick();}}>
+
+                    {/* Проверка скидки */}
+                    <div>
+                        {product.discount !== 0 ? (
+                            <React.Fragment>
+                                {/* Старая цена, перечеркнутая */}
+                                <h4 style={{ textDecoration: 'line-through', color: 'gray' }}>
+                                    {product.price.toFixed(2)} грн
+                                </h4>
+                                {/* Новая цена, красная */}
+                                <h4 style={{ color: 'red' }}>
+                                    {(product.price - (product.price * (product.discount / 100))).toFixed(2)} грн (-{product.discount}%)
+                                </h4>
+                                <p>Ваша економія: {(product.price * (product.discount / 100)).toFixed(2)} грн</p>
+                            </React.Fragment>
+                        ) : (
+                            <h4>{product.price.toFixed(2)} грн</h4>
+                        )}
+                    </div>
+
+                    <button onClick={e => { e.stopPropagation(); cartClick(); }}>
                         До кошику
                     </button>
                     <hr/>
                     <h5>Вас також може зацікавити:</h5>
                     {product.similarProducts && product.similarProducts.map(p =>
-                        <ProductCard p={p} isSmall={true} key={p.id} /> )}
+                        <ProductCard p={p} isSmall={true} key={p.id} />)}
                 </div>
             </div>
-        </div>
-        }{!product.id && <div>
-        Не знайдено
-    </div>}
+        </div>}
+
+        {!product.id && <div>
+            Не знайдено
+        </div>}
     </div>;
 }
 
@@ -999,21 +1063,43 @@ function ProductCard({p, isSmall}) {
             method: 'PUT'
         }).then(refreshCart).catch(alert);
     });
-    return <div key={p.id} className={"product-card " + (isSmall ? "scale-75" : "") }
-                onClick={() => dispatch({type: 'navigate', payload: 'product/' + (p.slug || p.id)})}>
-        <picture>
-            <img src={"storage/" + p.imageUrl} alt="product"/>
-        </picture>
-        <h3>{p.name}</h3>
-        <p>{p.description}</p>
-        <h4>₴ {p.price.toFixed(2)}</h4>
-        {(state.cart && state.cart.cartItems && state.cart.cartItems.some(ci => ci.productId === p.id))
-            ? <span className="cart-fab" onClick={(e) => cartPut(e, p)}>
-                    <i className="bi bi-bag-check"></i></span>
-            : <span className="cart-fab" onClick={(e) => cartPost(e, p)}>
-                    <i className="bi bi-plus-circle"></i></span>
-        }
-    </div>
+
+    const discountedPrice = p.discount !== 0 ? p.price - (p.price * (p.discount / 100)) : p.price;
+
+    return (
+        <div key={p.id} className={"product-card " + (isSmall ? "scale-75" : "")}
+             onClick={() => dispatch({type: 'navigate', payload: 'product/' + (p.slug || p.id)})}>
+            <picture>
+                <img src={"storage/" + p.imageUrl} alt="product" />
+            </picture>
+            <h3>{p.name}</h3>
+            <p>{p.description}</p>
+
+            {/* Используем React.Fragment */}
+            {p.discount !== 0 ? (
+                <React.Fragment>
+                    <h4 style={{ textDecoration: 'line-through', color: 'gray' }}>
+                        ₴ {p.price.toFixed(2)}
+                    </h4>
+                    <h4 style={{ color: 'red' }}>
+                        ₴ {discountedPrice.toFixed(2)}
+                    </h4>
+                    <p style={{ color: 'red' }}>
+                        Скидка: {p.discount}%!
+                    </p>
+                </React.Fragment>
+            ) : (
+                <h4>₴ {p.price.toFixed(2)}</h4>
+            )}
+
+            {(state.cart && state.cart.cartItems && state.cart.cartItems.some(ci => ci.productId === p.id))
+                ? <span className="cart-fab" onClick={(e) => cartPut(e, p)}>
+                <i className="bi bi-bag-check"></i></span>
+                : <span className="cart-fab" onClick={(e) => cartPost(e, p)}>
+                <i className="bi bi-plus-circle"></i></span>
+            }
+        </div>
+    );
 }
 
 
