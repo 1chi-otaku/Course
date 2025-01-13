@@ -1,0 +1,166 @@
+#app-container{
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.spacer {
+    flex : 1;
+}
+
+.nav-avatar
+{
+    border-radius: 50%;
+    cursor: pointer;
+    max-width: 40px;
+    max-height: 50px;
+}
+
+.home-category
+{
+    cursor: pointer;
+    border: 3px solid lightgray;
+    display: inline-block;
+    height: 25vw;
+    margin: 2.5vw;
+    vertical-align: bottom;
+    width: 20vw;
+    transition: 100ms;
+}
+
+.home-category:hover
+{
+   scale: 1.1;
+    transition: 300ms;
+}
+
+.home-category h3
+{
+    display: block;
+    font-size: 1.5vw;
+    padding: 0.1vw 1vw;
+}
+
+.home-category picture
+{
+    align-items: center;
+    background-color: antiquewhite;
+    display: flex;
+    margin: auto;
+    justify-content: center;
+    height: 19vw;
+    width: 19vw;
+}
+
+.home-category img
+{
+    max-height: 19vw;
+    max-width: 19vw;
+    width: 100%;
+}
+
+.home-category p
+{
+    font-size: 1vw;
+    padding: 0.1vw 1vw;
+
+}
+
+.product-card
+{
+    cursor: pointer;
+    display: inline-block;
+    height: 20vw;
+    margin: 2.0vw;
+    position: relative;
+    vertical-align: bottom;
+    width: 14Vw;
+    transition: 100ms;
+}
+
+.product-card:hover
+{
+    scale: 1.1;
+    transition: 300ms;
+}
+
+.product-card h3
+{
+    display: block;
+    font-size: 1.5vw;
+    padding: 0.1vw 0;
+}
+
+.product-card picture
+{
+    align-items: center;
+    background-color: #eee;
+    display: flex;
+    height: 14vw;
+    justify-content: center;
+    margin: auto;
+    width: 14vw;
+}
+
+.product-card img {
+    max-height: 14vw;
+    max-width: 14vw;
+    width: 100%;
+}
+
+.product-card p {
+    font-size: 1vw;
+    margin: 0;
+    padding: .1vw 0;
+    overflow: hidden;
+}
+
+.product-card h4{
+    font-size: 1.5vw;
+    margin: 0;
+    padding: .1vw 0;
+}
+
+.cart-fab{
+    align-items: center;
+    background-color: tomato;
+    border-radius: 50%;
+    bottom: 4.5vw;
+    color: snow;
+    display: flex;
+    justify-content: center;
+    height: 3vw;
+    position: absolute;
+    right: 0.5vw;
+    width: 3vw;
+}
+
+.product-page-left img {
+    width: 90%;
+}
+
+.scale-75 {
+    transform: scale(.75);
+}
+
+.cart-row picture {
+    width: 100%;
+}
+
+.cart-row img {
+    width: 100%;
+}
+
+.cart-widget-quantity {
+    background-color: #05BC52;
+    border-radius: 50%;
+    display: inline-block;
+    padding: 0 0.5em;
+    margin-left: 5px;
+}
+
+.circle-logo {
+    width: 45px; /* Диаметр кружка */
+    height: 45px;
+    display: inline-block;
+}

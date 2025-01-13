@@ -140,8 +140,8 @@ function App({contextPath, homePath}) {
 
         <AuthModal />
 
-        <footer className="bg-body-tertiary px-3 py-2">
-            &copy; 2024, ITSTEP KN-P-213
+        <footer className="bg-body-tertiary px-3 py-2" style="color: white;">
+            &copy; 2025, ElectroNest
         </footer>
     </AppContext.Provider>;
 }
