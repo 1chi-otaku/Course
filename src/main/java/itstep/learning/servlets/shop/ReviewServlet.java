@@ -69,7 +69,7 @@ public class ReviewServlet extends RestServlet {
         review.setMessage(data);
 
         data = formParseResult.getFields().get("product_id");
-        data = "09638028-6490-4071-9bf9-3e5c40aa72fa";
+
         if (data == null || data.isEmpty()) {
             super.sendResponse(400, "Missing required field 'product_id' ");
             return;

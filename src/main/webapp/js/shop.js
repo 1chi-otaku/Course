@@ -1055,14 +1055,7 @@ function Product({ id, contextPath }) {
             .catch(console.error);
     }, [id]);
 
-    React.useEffect(() => {
-        if (id) {
-            // Загружаем отзывы
-            request('/shop/review?product_id=' + id)
-                .then(setReviews)
-                .catch(console.error);
-        }
-    }, [id]);
+
 
     const onReviewSubmit = React.useCallback(e => {
         e.preventDefault();
@@ -1070,7 +1063,7 @@ function Product({ id, contextPath }) {
         for (let [key, value] of formData.entries()) {
             console.log(`${key}: ${value}`);
         }
-        formData.append("product_id", id);
+        formData.append("product_id", product.id);
 
         fetch("http://localhost:2060/Course/shop/review", {
             method: "POST",
