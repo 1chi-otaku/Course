@@ -163,3 +163,34 @@
     height: 45px;
     display: inline-block;
 }
+
+.review-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+}
+
+.review-name {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #333;
+}
+
+.review-body {
+    margin-top: 8px;
+}
+
+.review-message {
+    font-size: 1em;
+    color: #555;
+    line-height: 1.5;
+}

@@ -859,7 +859,7 @@ function Cart() {
     const incCartItem = React.useCallback ((item, delta) => {
         if(Number(item.quantity) + Number(delta) === 0)
         {
-            if(!confirm("Видалити товар з кошику?"))
+            if(!confirm("Are you sure"))
             {
                 return;
             }
@@ -873,7 +873,7 @@ function Cart() {
     });
 
     const delCartItem = React.useCallback(item =>{
-        if(!confirm("Скасувати весь кошик?"))
+        if(!confirm("You sure you want to cancel all your cart??"))
         {
             return;
         }
@@ -884,7 +884,7 @@ function Cart() {
     })
 
     const delCart = React.useCallback(() =>{
-        if(!confirm("Скасувати весь кошик?"))
+        if(!confirm("You sure you want to cancel all your cart??"))
         {
             return;
         }
@@ -902,7 +902,7 @@ function Cart() {
             return s + (discountedPrice * c.quantity);
         }, 0.0).toFixed(2);
 
-        if (!confirm(`Підтверджуєте покупку на суму ${totalAmount} грн?`)) {
+        if (!confirm(`The total sum is ${totalAmount} hrn?`)) {
             return;
         }
 
@@ -914,15 +914,15 @@ function Cart() {
 
 
     return <div>
-        <h2>Кошик</h2>
+        <h2>Cart</h2>
 
         {state.cart && state.cart.cartItems
             ? <React.Fragment>
                 <div className="row cart-row">
                     <div className="col col-2"><br/></div>
-                    <div className="col col-3"><h5>Назва</h5></div>
-                    <div className="col col-3"><h5>Кількість</h5></div>
-                    <div className="col col-2"><h5>Ціна</h5></div>
+                    <div className="col col-3"><h5>Title</h5></div>
+                    <div className="col col-3"><h5>Quantity</h5></div>
+                    <div className="col col-2"><h5>Price</h5></div>
                     <div className="col col-2"><br/></div>
                 </div>
 
@@ -977,7 +977,7 @@ function Cart() {
                 })}
 
                 {state.cart.cartItems.length > 0 && <div className="row">
-                    <div className="col offset-4 col-1">Разом</div>
+                    <div className="col offset-4 col-1">All Together</div>
                     <div className="col col-3">
                         {state.cart.cartItems.reduce((s, c) => s + c.quantity, 0)}
                     </div>
@@ -990,18 +990,18 @@ function Cart() {
                         }, 0).toFixed(2)}
                     </div>
                     <div className="col">
-                        <button onClick={() => buyCart()} className="btn btn-success" title="Придбати">
+                        <button onClick={() => buyCart()} className="btn btn-success" title="Buy">
                             <i className="bi bi-basket3"></i>
                         </button>
-                        <button onClick={() => delCart()} className="btn btn-danger" title="Скасувати">
+                        <button onClick={() => delCart()} className="btn btn-danger" title="Cancel">
                             <i className="bi bi-trash3"></i>
                         </button>
                     </div>
                 </div>}
             </React.Fragment>
-            : <h3>Кошик порожній</h3>}
+            : <h3>The cart is empty</h3>}
 
-        <b onClick={() => dispatch({type: "navigate", payload: "home"})}>На Домашню</b>
+        <b onClick={() => dispatch({type: "navigate", payload: "home"})}>Go home</b>
     </div>;
 }
 
@@ -1079,7 +1079,7 @@ function Product({ id, contextPath }) {
             body: formData
         }).then(r => r.json()).then(j => {
             if (j.status.isSuccessful) {
-                alert("Product успішно створений");
+                alert("Thanks for the review.");
             } else {
                 alert(j.data);
             }
@@ -1148,10 +1148,10 @@ function Product({ id, contextPath }) {
                                     cartClick();
                                 }}
                             >
-                                До кошику
+                                Buy
                             </button>
                             <hr />
-                            <h5>Вас також може зацікавити:</h5>
+                            <h5>Check this out!:</h5>
                             {product.similarProducts &&
                                 product.similarProducts.map((p) => (
                                     <ProductCard p={p} isSmall={true} key={p.id} />
@@ -1160,13 +1160,16 @@ function Product({ id, contextPath }) {
                     </div>
 
                     <hr />
-                    <h3>Відгуки:</h3>
+                    <h3>Reviews:</h3>
                     {reviews.length > 0 ? (
                         reviews.map((review) => (
-                            <div key={review.id} className="review">
-                                <h5>{review.name}</h5>
-                                <p>{review.message}</p>
-                                <hr />
+                            <div key={review.id} className="review-card">
+                                <div className="review-header">
+                                    <h5 className="review-name">{review.name}</h5>
+                                </div>
+                                <div className="review-body">
+                                    <p className="review-message">{review.message}</p>
+                                </div>
                             </div>
                         ))
                     ) : (
