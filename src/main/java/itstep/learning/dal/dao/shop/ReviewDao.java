@@ -45,23 +45,7 @@ public class ReviewDao {
         return review;
     }
 
-    // Get review by ID
-    public Review getById(UUID id) {
-        Review review = null;
-        String sql = "SELECT * FROM `reviews` WHERE `review_id` = ?";
 
-        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
-            prep.setString(1, id.toString());
-            ResultSet rs = prep.executeQuery();
-            if (rs.next()) {
-                review = new Review(rs);
-            }
-        } catch (SQLException ex) {
-            logger.warning(ex.getMessage() + " -- " + sql);
-        }
-
-        return review;
-    }
 
     public List<Review> getReviewsByProductId(String productId) {
         List<Review> reviews = new ArrayList<>();

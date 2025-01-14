@@ -13,6 +13,7 @@ public class Review {
     public Review() {
     }
 
+    //инициализирует объект на основе строки данных из SQLзапроса:
     public Review(ResultSet rs) throws SQLException {
         this.setId(UUID.fromString(rs.getString("review_id")));
         this.setProductId(UUID.fromString(rs.getString("product_id")));

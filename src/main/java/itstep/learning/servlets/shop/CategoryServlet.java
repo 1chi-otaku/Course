@@ -30,7 +30,7 @@ public class CategoryServlet extends RestServlet {
     private final FormParseService formParseService;
     private final StorageService storageService;
     private final CategoryDao categoryDao;
-    private final DbService dbService;
+
 
     @Inject
     public CategoryServlet(Logger logger, FormParseService formParseService, StorageService storageService, CategoryDao categoryDao, DbService dbService) {
@@ -38,7 +38,6 @@ public class CategoryServlet extends RestServlet {
         this.formParseService = formParseService;
         this.storageService = storageService;
         this.categoryDao = categoryDao;
-        this.dbService = dbService;
     }
 
 

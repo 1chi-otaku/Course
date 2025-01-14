@@ -138,15 +138,6 @@ public class CartServlet extends RestServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        // додати товар до кошику (CREATE)
-        // 1. Встановити користувача (за токеном)
-        // 1.1. Якщо приходить запит від неавторизованого користувача, то ...
-        // 2. Дізнатись чи є в користувача відкритий кошик
-        //   якщо е, то додаємо до нього,
-         //       якщо немає, то створюемо новий
-        // 3. Перевіряємо чи є зазначений товар у кошику
-       // якщо є - збільшуємо кількість
-       // якщо немає - додаємо
 
         String productId = req.getParameter( "product-id" );
         if( productId == null || productId.isEmpty() ){
