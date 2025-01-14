@@ -1066,15 +1066,6 @@ function Product({ id, contextPath }) {
         }
     }, [product.id]);
 
-
-
-
-
-
-
-
-
-
     const onReviewSubmit = React.useCallback(e => {
         e.preventDefault();
         const formData = new FormData(e.target);
@@ -1171,15 +1162,17 @@ function Product({ id, contextPath }) {
                     <hr />
                     <h3>Відгуки:</h3>
                     {reviews.length > 0 ? (
-                        reviews.map(review => (
-                            <div key={review.review_id}>
-                                <h4>{review.review_name}</h4>
-                                <p>{review.review_message}</p>
+                        reviews.map((review) => (
+                            <div key={review.id} className="review">
+                                <h5>{review.name}</h5>
+                                <p>{review.message}</p>
+                                <hr />
                             </div>
                         ))
                     ) : (
-                        <p>Немає відгуків для цього товару</p>
+                        <p>Немає відгуків</p>
                     )}
+
 
                     <hr />
                     <h3>Додати відгук:</h3>
