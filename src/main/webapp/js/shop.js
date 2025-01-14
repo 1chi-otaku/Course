@@ -1043,68 +1043,178 @@ function Category({id}) {
     </div>;
 }
 
-function Product({id}) {
-    const {request, dispatch, refreshCart} = React.useContext(AppContext);
+function Product({ id, contextPath }) {
+    const { request, dispatch, refreshCart } = React.useContext(AppContext);
     const [product, setProduct] = React.useState({});
-    React.useEffect( () => {
+    const [reviews, setReviews] = React.useState([]);
+
+    React.useEffect(() => {
+        // Загружаем данные продукта
         request('/shop/product?id=' + id)
-            .then( setProduct )
-            .catch( console.error );
-    }, [id] );
-    const cartClick = React.useCallback( e => {
+            .then(setProduct)
+            .catch(console.error);
+    }, [id]);
+
+    React.useEffect(() => {
+        if (id) {
+            // Загружаем отзывы
+            request('/shop/review?product_id=' + id)
+                .then(setReviews)
+                .catch(console.error);
+        }
+    }, [id]);
+
+    const onReviewSubmit = React.useCallback(e => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        for (let [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+        }
+        formData.append("product_id", id);
+
+        fetch("http://localhost:2060/Course/shop/review", {
+            method: "POST",
+            body: formData
+        }).then(r => r.json()).then(j => {
+            if (j.status.isSuccessful) {
+                alert("Product успішно створений");
+            } else {
+                alert(j.data);
+            }
+        });
+    });
+
+    const cartClick = React.useCallback(e => {
         request('/shop/cart?product-id=' + product.id, {
             method: 'POST'
         }).then(refreshCart).catch(alert);
     });
-    return <div>
-        <h2>Сторінка товару</h2>
-        {product.id && <div>
-            <div className="row">
-                <div className="col col-5">
-                    <div className="product-page-left">
-                        <picture>
-                            <img src={"storage/" + product.imageUrl} alt="product"/>
-                        </picture>
+
+    return (
+        <div>
+            <h2>Сторінка товару</h2>
+            {product.id && (
+                <div>
+                    <div className="row">
+                        <div className="col col-5">
+                            <div className="product-page-left">
+                                <picture>
+                                    <img src={"storage/" + product.imageUrl} alt="product" />
+                                </picture>
+                            </div>
+                        </div>
+                        <div className="col col-7">
+                            <h3>{product.name}</h3>
+                            <p>{product.description}</p>
+
+                            {/* Проверка скидки */}
+                            <div>
+                                {product.discount !== 0 ? (
+                                    <React.Fragment>
+                                        <h4
+                                            style={{
+                                                textDecoration: "line-through",
+                                                color: "gray",
+                                            }}
+                                        >
+                                            {product.price.toFixed(2)} грн
+                                        </h4>
+                                        <h4 style={{ color: "red" }}>
+                                            {(
+                                                product.price -
+                                                product.price * (product.discount / 100)
+                                            ).toFixed(2)}{" "}
+                                            грн (-{product.discount}%)
+                                        </h4>
+                                        <p>
+                                            Ваша економія:{" "}
+                                            {(
+                                                product.price *
+                                                (product.discount / 100)
+                                            ).toFixed(2)}{" "}
+                                            грн
+                                        </p>
+                                    </React.Fragment>
+                                ) : (
+                                    <h4>{product.price.toFixed(2)} грн</h4>
+                                )}
+                            </div>
+
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    cartClick();
+                                }}
+                            >
+                                До кошику
+                            </button>
+                            <hr />
+                            <h5>Вас також може зацікавити:</h5>
+                            {product.similarProducts &&
+                                product.similarProducts.map((p) => (
+                                    <ProductCard p={p} isSmall={true} key={p.id} />
+                                ))}
+                        </div>
                     </div>
+
+                    <hr />
+                    <h3>Відгуки:</h3>
+                    {reviews.length > 0 ? (
+                        reviews.map(review => (
+                            <div key={review.review_id}>
+                                <h4>{review.review_name}</h4>
+                                <p>{review.review_message}</p>
+                            </div>
+                        ))
+                    ) : (
+                        <p>Немає відгуків для цього товару</p>
+                    )}
+
+                    <hr />
+                    <h3>Додати відгук:</h3>
+                    <form encType="multipart/form-data" method="POST" onSubmit={onReviewSubmit}>
+                        <div className="row">
+                            <div className="col col-6">
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" id="review_name-addon">
+                                        <i className="bi bi-info-square"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="review_name"
+                                        placeholder="Name"
+                                        aria-label="Name"
+                                        aria-describedby="review_name-addon"
+                                    />
+                                </div>
+                            </div>
+                            <div className="col col-6">
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" id="review_message-addon">
+                                        <i className="bi bi-card-text"></i>
+                                    </span>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        name="review_message"
+                                        placeholder="Review"
+                                        aria-label="Review"
+                                        aria-describedby="review_message-addon"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" className="btn btn-outline-success">
+                            Додати відгук
+                        </button>
+                    </form>
                 </div>
-                <div className="col col-7">
-                    <h3>{product.name}</h3>
-                    <p>{product.description}</p>
+            )}
 
-                    {/* Проверка скидки */}
-                    <div>
-                        {product.discount !== 0 ? (
-                            <React.Fragment>
-                                {/* Старая цена, перечеркнутая */}
-                                <h4 style={{ textDecoration: 'line-through', color: 'gray' }}>
-                                    {product.price.toFixed(2)} грн
-                                </h4>
-                                {/* Новая цена, красная */}
-                                <h4 style={{ color: 'red' }}>
-                                    {(product.price - (product.price * (product.discount / 100))).toFixed(2)} грн (-{product.discount}%)
-                                </h4>
-                                <p>Ваша економія: {(product.price * (product.discount / 100)).toFixed(2)} грн</p>
-                            </React.Fragment>
-                        ) : (
-                            <h4>{product.price.toFixed(2)} грн</h4>
-                        )}
-                    </div>
-
-                    <button onClick={e => { e.stopPropagation(); cartClick(); }}>
-                        До кошику
-                    </button>
-                    <hr/>
-                    <h5>Вас також може зацікавити:</h5>
-                    {product.similarProducts && product.similarProducts.map(p =>
-                        <ProductCard p={p} isSmall={true} key={p.id} />)}
-                </div>
-            </div>
-        </div>}
-
-        {!product.id && <div>
-            Не знайдено
-        </div>}
-    </div>;
+            {!product.id && <div>Не знайдено</div>}
+        </div>
+    );
 }
 
 function ProductCard({p, isSmall}) {

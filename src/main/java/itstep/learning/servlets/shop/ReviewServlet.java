@@ -7,6 +7,8 @@ import itstep.learning.dal.dto.shop.Review;
 import itstep.learning.rest.RestMetaData;
 import itstep.learning.rest.RestResponse;
 import itstep.learning.rest.RestServlet;
+import itstep.learning.services.form.FormParseResult;
+import itstep.learning.services.form.FormParseService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -14,17 +16,20 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 @Singleton
 public class ReviewServlet extends RestServlet {
     private final Logger logger;
     private final ReviewDao reviewDao;
+    private final FormParseService formParseService;
 
     @Inject
-    public ReviewServlet(Logger logger, ReviewDao reviewDao) {
+    public ReviewServlet(Logger logger, ReviewDao reviewDao, FormParseService formParseService) {
         this.logger = logger;
         this.reviewDao = reviewDao;
+        this.formParseService = formParseService;
     }
 
     @Override
@@ -35,10 +40,48 @@ public class ReviewServlet extends RestServlet {
                         .setMethod(req.getMethod())
                         .setName("KN-P-213 Shop API for reviews")
                         .setServerTime(new Date())
-                        .setAllowedMethods(new String[]{"GET", "POST", "OPTIONS"})
+                        .setAllowedMethods(new String[]{"GET", "POST", "OPTIONS", "PUT", "DELETE"})
         );
 
         super.service(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
+        FormParseResult formParseResult = formParseService.parse(req);
+
+        String data = formParseResult.getFields().get("review_name");
+        Review review = new Review();
+        if (data == null || data.isEmpty()) {
+            super.sendResponse(400, "Missing required field 'review_name' ");
+            return;
+        }
+
+        review.setName(data);
+
+        data = formParseResult.getFields().get("review_message");
+        if (data == null || data.isEmpty()) {
+            super.sendResponse(400, "Missing required field 'review_message' ");
+            return;
+        }
+
+        review.setMessage(data);
+
+        data = formParseResult.getFields().get("product_id");
+        data = "09638028-6490-4071-9bf9-3e5c40aa72fa";
+        if (data == null || data.isEmpty()) {
+            super.sendResponse(400, "Missing required field 'product_id' ");
+            return;
+        }
+
+        review.setProductId(UUID.fromString(data));
+
+        if ((review = reviewDao.create(review)) != null) {
+            super.sendResponse(200, review);
+        } else {
+            super.sendResponse(500, "Error creating review");
+        }
     }
 
     @Override
@@ -48,6 +91,8 @@ public class ReviewServlet extends RestServlet {
             this.getReviewsByProductId(productId);
             return;
         }
+
+
         super.sendResponse(400, "Missing required field: 'product_id'");
     }
 
@@ -60,8 +105,5 @@ public class ReviewServlet extends RestServlet {
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        super.sendResponse(405, "POST method is not supported for reviews.");
-    }
+
 }
