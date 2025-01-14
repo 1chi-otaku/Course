@@ -1049,11 +1049,29 @@ function Product({ id, contextPath }) {
     const [reviews, setReviews] = React.useState([]);
 
     React.useEffect(() => {
-        // Загружаем данные продукта
+        // Загружаем данные продукта (чтобы получить product.id)
         request('/shop/product?id=' + id)
             .then(setProduct)
             .catch(console.error);
     }, [id]);
+
+    React.useEffect(() => {
+        if (product.id) {
+            request('/shop/review?product_id=' + product.id)
+                .then((data) => {
+                    console.log("Received reviews data:", data);
+                    setReviews(data);
+                })
+                .catch(console.error);
+        }
+    }, [product.id]);
+
+
+
+
+
+
+
 
 
 

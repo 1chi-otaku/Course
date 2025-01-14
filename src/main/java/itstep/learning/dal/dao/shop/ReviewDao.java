@@ -81,23 +81,7 @@ public class ReviewDao {
         return reviews;
     }
 
-    // Check if a review exists for a product
-    public boolean reviewExists(UUID productId, String reviewName) {
-        String sql = "SELECT COUNT(*) FROM `reviews` WHERE `product_id` = ? AND `review_name` = ?";
 
-        try (PreparedStatement prep = dbService.getConnection().prepareStatement(sql)) {
-            prep.setString(1, productId.toString());
-            prep.setString(2, reviewName);
-            ResultSet rs = prep.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException ex) {
-            logger.warning(ex.getMessage() + " -- " + sql);
-        }
-
-        return false;
-    }
 
     // Install the reviews table (if not exists)
     public boolean install() {
